@@ -13,6 +13,18 @@ FRAME_DIR = os.path.join(DATA_DIR, "frames")
 META_FILE = os.path.join(DATA_DIR, "balanced_train_segments.csv")  # Your AudioSet CSV file
 OUTPUT_CSV = os.path.join(DATA_DIR, "frame_metadata.csv")
 
+animal_labels = [
+    '/m/0bt9lr',  # Dog
+    '/m/01yrx',   # Cat
+    '/m/01xqw',   # Cattle
+    '/m/068hy',   # Pig
+    '/m/015p6',   # Bird
+    '/m/03d3r',   # Lion
+    '/m/07rwj',   # Rooster
+    '/m/03k3r',   # Horse
+    '/m/0jbk'     # Donkey
+]
+
 os.makedirs(FRAME_DIR, exist_ok=True)
 
 def get_random_frame(ytid, start_sec, duration, index, max_retries=3):
@@ -204,7 +216,10 @@ def sample_metadata(n=100):
         raise RuntimeError("Could not find header line in CSV")
 
     reader = csv.DictReader(data_lines, fieldnames=header)
-    entries = [row for row in reader if '/m/09x0r' in row['positive_labels']]
+    entries = [
+        row for row in reader
+        if any(label in row['positive_labels'] for label in animal_labels)
+    ]
     return random.sample(entries, n)
 
 def collect_dataset(n=100):
@@ -235,4 +250,4 @@ def collect_dataset(n=100):
                 print(f"Failed to process {entry['YTID']} ({successful}/{i+1} successful)")
 
 if __name__ == "__main__":
-    collect_dataset(n=10)
+    collect_dataset(n=130)
